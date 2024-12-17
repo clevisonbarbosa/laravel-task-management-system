@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class TaskController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
         $tasks = auth()->user()->tasks()->with('category')->get();
@@ -30,11 +31,20 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
+            'new_category' => 'nullable|string|max:255',
         ]);
+
+        if ($request->filled('new_category')) {
+            $category = auth()->user()->categories()->create([
+                'name' => $request->input('new_category'),
+            ]);
+
+            $validated['category_id'] = $category->id;
+        }
 
         auth()->user()->tasks()->create($validated);
 
-        return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
+        return redirect()->route('tasks.index')->with('success', 'Tarefa criada com sucesso!');
     }
 
     public function edit(Task $task)
@@ -50,6 +60,10 @@ class TaskController extends Controller
     {
         $this->authorize('update', $task);
 
+        $request->merge([
+            'is_completed' => $request->has('is_completed'),
+        ]);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -59,7 +73,7 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
+        return redirect()->route('tasks.index')->with('success', 'Tarefa atualizada com sucesso!');
     }
 
     public function destroy(Task $task)
