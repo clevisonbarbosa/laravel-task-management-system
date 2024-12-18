@@ -11,11 +11,25 @@ class TaskController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = auth()->user()->tasks()->with('category')->get();
+        $user = auth()->user();
 
-        return view('tasks.index', compact('tasks'));
+        $query = $user->tasks()->with('category');
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('is_completed')) {
+            $query->where('is_completed', $request->is_completed);
+        }
+
+        $tasks = $query->get();
+
+        $categories = $user->categories;
+
+        return view('tasks.index', compact('tasks', 'categories'));
     }
 
     public function create()
