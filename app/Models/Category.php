@@ -11,6 +11,15 @@ class Category extends Model
 
     protected $fillable = ['name', 'user_id'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($category) {
+            $category->name = trim($category->name);
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

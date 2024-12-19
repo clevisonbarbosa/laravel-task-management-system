@@ -15,18 +15,22 @@ class TaskController extends Controller
     {
         $user = auth()->user();
 
-        $query = $user->tasks()->with('category');
+        $query = Task::query()
+            ->whereHas('users', function($q) use ($user) {
+                $q->where('users.id', $user->id);
+            })
+            ->with(['category', 'users']);
+
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->filled('is_completed')) {
-            $query->where('is_completed', $request->is_completed);
+        if ($request->filled('is_completed') && $request->is_completed !== '') {
+            $query->where('is_completed', $request->is_completed === '1');
         }
 
-        $tasks = $query->get();
-
+        $tasks = $query->latest()->get();
         $categories = $user->categories;
 
         return view('tasks.index', compact('tasks', 'categories'));
@@ -52,16 +56,25 @@ class TaskController extends Controller
         ]);
 
         if ($request->filled('new_category')) {
-            $category = auth()->user()->categories()->create([
-                'name' => $request->input('new_category'),
-            ]);
-            $validated['category_id'] = $category->id;
+            $existingCategory = auth()->user()->categories()
+                ->where('name', 'LIKE', $request->input('new_category'))
+                ->first();
+
+            if ($existingCategory) {
+                $validated['category_id'] = $existingCategory->id;
+            } else {
+                $category = auth()->user()->categories()->create([
+                    'name' => $request->input('new_category'),
+                ]);
+                $validated['category_id'] = $category->id;
+            }
         }
 
         $task = auth()->user()->tasks()->create($validated);
         $task->users()->sync($request->input('users', []));
 
-        return redirect()->route('tasks.index')->with('success', 'Tarefa criada com sucesso!');
+        return redirect()->route('tasks.index')
+            ->with('success', 'Tarefa criada com sucesso!');
     }
 
     public function edit(Task $task)
