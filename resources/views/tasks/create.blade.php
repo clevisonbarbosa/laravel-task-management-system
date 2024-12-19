@@ -1,12 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h1>Criar Tarefa</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Criar Nova Tarefa</h5>
+                </div>
 
-        <form action="{{ route('tasks.store') }}" method="POST">
-            @csrf
-            @include('tasks._form', ['task' => null, 'categories' => $categories, 'buttonText' => 'Criar Tarefa'])
-        </form>
+                <div class="card-body p-4">
+                    <form action="{{ route('tasks.store') }}" method="POST">
+                        @csrf
+                        @include('tasks._form', [
+                            'task' => null,
+                            'categories' => $categories,
+                            'buttonText' => 'Criar Tarefa'
+                        ])
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 @endsection
