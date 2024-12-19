@@ -19,10 +19,13 @@ Um sistema robusto para gerenciamento de tarefas desenvolvido com Laravel 11, pe
 ```cp .env.example .env```
 ```php artisan key:generate```
 
-4. Configure o banco de dados SQLite
+4. Configure o banco de dados (MySQL ou SQLite)
+- Para MySQL: configure as credenciais no arquivo `.env`.
+- Para SQLite: execute os comandos abaixo para configurar:
+  ```bash
+  touch database/database.sqlite
+  php artisan migrate
 
-```touch database/database.sqlite```
-```php artisan migrate```
 
 5. Inicie o servidor
 
