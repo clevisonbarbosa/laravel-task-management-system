@@ -11,27 +11,26 @@ class TaskController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(Request $request)
+    public function index()
     {
-        $user = auth()->user();
-
+        // Query base para pegar tarefas do usuário
         $query = Task::query()
-            ->whereHas('users', function($q) use ($user) {
-                $q->where('users.id', $user->id);
-            })
-            ->with(['category', 'users']);
+            ->whereHas('users', function ($query) {
+                $query->where('users.id', auth()->id());
+            });
 
-
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+        // Filtro por categoria
+        if (request('category_id')) {
+            $query->where('category_id', request('category_id'));
         }
 
-        if ($request->filled('is_completed') && $request->is_completed !== '') {
-            $query->where('is_completed', $request->is_completed === '1');
+        // Filtro por status
+        if (request('is_completed') !== null && request('is_completed') !== '') {
+            $query->where('is_completed', request('is_completed') == '1');
         }
 
         $tasks = $query->latest()->get();
-        $categories = $user->categories;
+        $categories = auth()->user()->categories;
 
         return view('tasks.index', compact('tasks', 'categories'));
     }
@@ -49,9 +48,17 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => [
+                'nullable',
+                'exists:categories,id',
+                function ($attribute, $value, $fail) {
+                    if ($value && !auth()->user()->categories()->where('id', $value)->exists()) {
+                        $fail('A categoria selecionada não pertence a você.');
+                    }
+                }
+            ],
             'new_category' => 'nullable|string|max:255',
-            'users' => 'array',
+            'users' => 'nullable|array', // Alterado para nullable
             'users.*' => 'exists:users,id',
         ]);
 
@@ -71,7 +78,12 @@ class TaskController extends Controller
         }
 
         $task = auth()->user()->tasks()->create($validated);
-        $task->users()->sync($request->input('users', []));
+
+        $users = $request->input('users', []);
+        if (!in_array(auth()->id(), $users)) {
+            $users[] = auth()->id();
+        }
+        $task->users()->sync($users);
 
         return redirect()->route('tasks.index')
             ->with('success', 'Tarefa criada com sucesso!');
@@ -98,17 +110,25 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => [
+                'nullable',
+                'exists:categories,id',
+                function ($attribute, $value, $fail) {
+                    if ($value && !auth()->user()->categories()->where('id', $value)->exists()) {
+                        $fail('A categoria selecionada não pertence a você.');
+                    }
+                }
+            ],
             'is_completed' => 'boolean',
             'users' => 'array',
             'users.*' => 'exists:users,id',
         ]);
 
         $task->update($validated);
-
         $task->users()->sync($request->input('users', []));
 
-        return redirect()->route('tasks.index')->with('success', 'Tarefa atualizada com sucesso!');
+        return redirect()->route('tasks.index')
+            ->with('success', 'Tarefa atualizada com sucesso!');
     }
 
     public function destroy(Task $task)
@@ -117,6 +137,6 @@ class TaskController extends Controller
 
         $task->delete();
 
-        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully!');
+        return redirect()->route('tasks.index')->with('success', 'Task deleteda com sucesso!');
     }
 }
