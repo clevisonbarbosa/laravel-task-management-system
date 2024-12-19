@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+<div class="container main-content">
         <h1>Suas Tarefas</h1>
         <a href="{{ route('tasks.create') }}" class="btn btn-primary mb-3">Criar Tarefa</a>
 
