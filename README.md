@@ -5,19 +5,20 @@ Um sistema robusto para gerenciamento de tarefas desenvolvido com Laravel 11, pe
 ## Instalação
 
 1. Clone o repositório
-  ```bash
-  git clone https://github.com/clevisonbarbosa/laravel-task-management-system.git
-  cd laravel-task-management-system
+
+```git clone https://github.com/clevisonbarbosa/laravel-task-management-system.git```
+```cd laravel-task-management-system```
 
 2. Instale as dependências
-  ```bash
-  composer install
-  npm install
+
+```composer install```
+```npm install```
 
 3. Configure o ambiente
-  ```bash
-  cp .env.example .env
-  php artisan key:generate
+
+```cp .env.example .env```
+```php artisan key:generate```
+
 
 4. Configure o banco de dados (MySQL ou SQLite)
 - Para MySQL: configure as credenciais no arquivo `.env`.
@@ -28,8 +29,8 @@ Um sistema robusto para gerenciamento de tarefas desenvolvido com Laravel 11, pe
 
 
 5. Inicie o servidor
-  ```bash
-  php artisan serve
+
+```php artisan serve```
 
 ## Funcionalidades
 
@@ -54,18 +55,16 @@ O sistema inclui um job automatizado para limpar tarefas antigas:
 
 - Remove tarefas concluídas após 7 dias
 - Pode ser executado manualmente:
-  ```bash
-  php artisan tasks:delete-old
+```php artisan tasks:delete-old```
 
 - Para processar a fila de jobs:
-  ```bash
-  php artisan queue:work
+```php artisan queue:work```
 
 ## Testes
 
-- O projeto inclui testes automatizados cobrindo todas as funcionalidades principais:
-  ```bash
-  php artisan test
+O projeto inclui testes automatizados cobrindo todas as funcionalidades principais:
+
+```php artisan test```
 
 Os testes incluem:
 - Autenticação de usuários
