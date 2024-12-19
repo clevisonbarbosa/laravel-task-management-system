@@ -35,8 +35,9 @@ class TaskController extends Controller
     public function create()
     {
         $categories = auth()->user()->categories;
+        $allUsers = \App\Models\User::all();
 
-        return view('tasks.create', compact('categories'));
+        return view('tasks.create', compact('categories', 'allUsers'));
     }
 
     public function store(Request $request)
@@ -46,17 +47,19 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'new_category' => 'nullable|string|max:255',
+            'users' => 'array',
+            'users.*' => 'exists:users,id',
         ]);
 
         if ($request->filled('new_category')) {
             $category = auth()->user()->categories()->create([
                 'name' => $request->input('new_category'),
             ]);
-
             $validated['category_id'] = $category->id;
         }
 
-        auth()->user()->tasks()->create($validated);
+        $task = auth()->user()->tasks()->create($validated);
+        $task->users()->sync($request->input('users', []));
 
         return redirect()->route('tasks.index')->with('success', 'Tarefa criada com sucesso!');
     }
@@ -66,8 +69,9 @@ class TaskController extends Controller
         $this->authorize('update', $task);
 
         $categories = auth()->user()->categories;
+        $allUsers = \App\Models\User::all();
 
-        return view('tasks.edit', compact('task', 'categories'));
+        return view('tasks.edit', compact('task', 'categories', 'allUsers'));
     }
 
     public function update(Request $request, Task $task)
@@ -83,9 +87,13 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'is_completed' => 'boolean',
+            'users' => 'array',
+            'users.*' => 'exists:users,id',
         ]);
 
         $task->update($validated);
+
+        $task->users()->sync($request->input('users', []));
 
         return redirect()->route('tasks.index')->with('success', 'Tarefa atualizada com sucesso!');
     }

@@ -25,6 +25,18 @@
     <input type="text" name="new_category" id="new_category" class="form-control" placeholder="Digite o nome da nova categoria">
 </div>
 
+<div class="mb-3">
+    <label for="users" class="form-label">Atribuir Usuários</label>
+    <select name="users[]" id="users" class="form-control" multiple>
+        @foreach ($allUsers as $user)
+            <option value="{{ $user->id }}"
+                {{ isset($task) && $task->users->contains($user) ? 'selected' : '' }}>
+                {{ $user->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 <div class="form-check mb-3">
     <input type="checkbox" name="is_completed" id="is_completed" class="form-check-input" {{ old('is_completed', $task->is_completed ?? false) ? 'checked' : '' }}>
     <label for="is_completed" class="form-check-label">Marcar como concluída</label>
