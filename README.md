@@ -19,12 +19,13 @@ Um sistema robusto para gerenciamento de tarefas desenvolvido com Laravel 11, pe
 ```cp .env.example .env```
 ```php artisan key:generate```
 
-4. Compile os assets do frontend em novo terminal:
+4. Compile os assets do frontend em novo terminal
+
 ```npm run dev```  # Para ambiente de desenvolvimento
-# OU
 ```npm run build``` # Para ambiente de produção
 
-# Em outro terminal, manter o servidor Laravel:
+# Em outro terminal, manter o servidor Laravel
+
 ```php artisan serve```
 
 5. Configure o banco de dados (MySQL ou SQLite)
