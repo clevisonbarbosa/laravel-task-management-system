@@ -22,7 +22,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-4. Compile os assets do frontend
+4. Compile os assets do frontend em um terminal separado
 ```bash
 npm run dev  # Para ambiente de desenvolvimento
 # OU
