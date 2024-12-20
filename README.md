@@ -37,7 +37,7 @@ touch database/database.sqlite
 php artisan migrate
 ```
 
-6. Inicie o servidor
+6. Inicie o servidor em um novo terminal separado do terminal onde compilou os assets
 ```bash
 php artisan serve
 ```
