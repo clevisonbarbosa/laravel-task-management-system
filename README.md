@@ -5,40 +5,42 @@ Um sistema robusto para gerenciamento de tarefas desenvolvido com Laravel 11, pe
 ## Instalação
 
 1. Clone o repositório
-
-```git clone https://github.com/clevisonbarbosa/laravel-task-management-system.git```
-```cd laravel-task-management-system```
+```bash
+git clone https://github.com/clevisonbarbosa/laravel-task-management-system.git
+cd laravel-task-management-system
+```
 
 2. Instale as dependências
-
-```composer install```
-```npm install```
+```bash
+composer install
+npm install
+```
 
 3. Configure o ambiente
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-```cp .env.example .env```
-```php artisan key:generate```
-
-4. Compile os assets do frontend em novo terminal
-
-```npm run dev```  # Para ambiente de desenvolvimento
-```npm run build``` # Para ambiente de produção
-
-# Em outro terminal, manter o servidor Laravel
-
-```php artisan serve```
+4. Compile os assets do frontend
+```bash
+npm run dev  # Para ambiente de desenvolvimento
+# OU
+npm run build # Para ambiente de produção
+```
 
 5. Configure o banco de dados (MySQL ou SQLite)
-- Para MySQL: configure as credenciais no arquivo `.env`.
+- Para MySQL: configure as credenciais no arquivo `.env`
 - Para SQLite: execute os comandos abaixo para configurar:
-  ```bash
-  touch database/database.sqlite
-  php artisan migrate
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
 
-
-5. Inicie o servidor
-
-```php artisan serve```
+6. Inicie o servidor
+```bash
+php artisan serve
+```
 
 ## Funcionalidades
 
@@ -63,16 +65,22 @@ O sistema inclui um job automatizado para limpar tarefas antigas:
 
 - Remove tarefas concluídas após 7 dias
 - Pode ser executado manualmente:
-```php artisan tasks:delete-old```
+```bash
+php artisan tasks:delete-old
+```
 
 - Para processar a fila de jobs:
-```php artisan queue:work```
+```bash
+php artisan queue:work
+```
 
 ## Testes
 
 O projeto inclui testes automatizados cobrindo todas as funcionalidades principais:
 
-```php artisan test```
+```bash
+php artisan test
+```
 
 Os testes incluem:
 - Autenticação de usuários
